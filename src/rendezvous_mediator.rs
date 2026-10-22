@@ -114,6 +114,13 @@ impl RendezvousMediator {
     }
 
     pub async fn start_all() {
+        #[cfg(feature = "ezbaseviewer-host")]
+        while !crate::common::ezbaseviewer_host_has_rendezvous_config() {
+            log::error!(
+                "EzbaseViewer Host is offline until a non-public rendezvous server is configured"
+            );
+            sleep(5.).await;
+        }
         crate::test_nat_type();
         if config::is_outgoing_only() {
             loop {
