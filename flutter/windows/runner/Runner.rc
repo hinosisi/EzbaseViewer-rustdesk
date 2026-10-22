@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "Purslane Tech Pte. Ltd." "\0"
+            VALUE "CompanyName", "EzbaseViewer Contributors" "\0"
             VALUE "FileDescription", "EzbaseViewer Host Remote Support Agent" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "rustdesk" "\0"
-            VALUE "LegalCopyright", "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved." "\0"
+            VALUE "InternalName", "EzbaseViewerHost" "\0"
+            VALUE "LegalCopyright", "Copyright © 2026 EzbaseViewer Contributors" "\0"
             VALUE "OriginalFilename", "ezbaseviewer-host.exe" "\0"
             VALUE "ProductName", "EzbaseViewer Host" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
