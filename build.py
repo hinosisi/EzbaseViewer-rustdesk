@@ -110,6 +110,12 @@ def make_parser():
     parser.add_argument('--flutter', action='store_true',
                         help='Build flutter package', default=False)
     parser.add_argument(
+        '--ezbaseviewer-host',
+        action='store_true',
+        help='Build the EzbaseViewer incoming-only Host profile',
+        default=False
+    )
+    parser.add_argument(
         '--hwcodec',
         action='store_true',
         help='Enable feature hwcodec' + (
@@ -274,6 +280,8 @@ def external_resources(flutter, args, res_dir):
 
 def get_features(args):
     features = ['inline'] if not args.flutter else []
+    if args.ezbaseviewer_host:
+        features.append('ezbaseviewer-host')
     if args.hwcodec:
         features.append('hwcodec')
     if args.vram:

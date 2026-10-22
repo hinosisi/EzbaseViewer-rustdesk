@@ -2102,6 +2102,18 @@ pub fn load_custom_client() {
     }
 }
 
+pub fn apply_product_profile() {
+    #[cfg(feature = "ezbaseviewer-host")]
+    {
+        *config::APP_NAME.write().unwrap() = "EzbaseViewer Host".to_owned();
+    }
+}
+
+#[inline]
+pub fn is_incoming_only() -> bool {
+    cfg!(feature = "ezbaseviewer-host") || config::is_incoming_only()
+}
+
 fn read_custom_client_advanced_settings(
     settings: serde_json::Value,
     map_display_settings: &HashMap<String, &&str>,
@@ -2249,6 +2261,7 @@ pub fn read_custom_client(config: &str) {
                 .insert(k, v.to_owned());
         };
     }
+    apply_product_profile();
 }
 
 #[inline]
@@ -2626,6 +2639,15 @@ pub fn is_direct_ip_access(peer: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(feature = "ezbaseviewer-host")]
+    #[test]
+    fn ezbaseviewer_host_profile_is_incoming_only_and_branded() {
+        apply_product_profile();
+
+        assert!(is_incoming_only());
+        assert_eq!(&*config::APP_NAME.read().unwrap(), "EzbaseViewer Host");
+    }
     use hbb_common::tokio::{
         self,
         time::{interval, interval_at, sleep, Duration, Instant, Interval},

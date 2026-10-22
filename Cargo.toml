@@ -26,6 +26,7 @@ use_samplerate = ["samplerate"]
 use_rubato = ["rubato"]
 use_dasp = ["dasp"]
 flutter = ["flutter_rust_bridge"]
+ezbaseviewer-host = []
 default = ["use_dasp"]
 hwcodec = ["scrap/hwcodec"]
 vram = ["scrap/vram"]
@@ -211,9 +212,9 @@ libxdo-sys = { path = "libs/libxdo-sys-stub" }
 
 [package.metadata.winres]
 LegalCopyright = "Copyright © 2026 Purslane Tech Pte. Ltd. All rights reserved."
-ProductName = "RustDesk"
-FileDescription = "RustDesk Remote Desktop"
-OriginalFilename = "rustdesk.exe"
+ProductName = "EzbaseViewer Host"
+FileDescription = "EzbaseViewer Host Remote Support Agent"
+OriginalFilename = "ezbaseviewer-host.exe"
 
 [target.'cfg(target_os="windows")'.build-dependencies]
 winres = "0.1"
