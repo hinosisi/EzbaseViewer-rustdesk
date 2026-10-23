@@ -8,6 +8,14 @@ name: Build EzbaseViewer Host (Windows x64)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - ezbaseviewer-serverpin
+    paths:
+      - ".github/workflows/ezbaseviewer-host.yml"
+      - "src/**"
+      - "build.py"
+      - "Cargo.toml"
 
 env:
   SCITER_RUST_VERSION: "1.75"
