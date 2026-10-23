@@ -34,6 +34,8 @@ pub fn core_main() -> Option<Vec<String>> {
     }
     crate::load_custom_client();
     crate::common::apply_product_profile();
+    #[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+    crate::common::ezbaseviewer_apply_pinned_server();
     #[cfg(windows)]
     if !crate::platform::windows::bootstrap() {
         // return None to terminate the process

@@ -2187,6 +2187,24 @@ pub fn ezbaseviewer_has_rendezvous_config() -> bool {
     true
 }
 
+// EzbaseViewer server pinning: force this build to use the Ezbase self-hosted
+// rendezvous/relay server and public key. Applied at startup so the Host/Viewer
+// never talks to the public RustDesk servers. (Ezbase 운영 서버로 고정)
+#[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+pub fn ezbaseviewer_apply_pinned_server() {
+    const SRV: &str = "222.239.193.10";
+    const KEY: &str = "1fU+Ii4jd+ZX1xzr+aOb7pd9h2bw4mCd56E+JOlYrzw=";
+    if Config::get_option("custom-rendezvous-server") != SRV {
+        Config::set_option("custom-rendezvous-server".to_owned(), SRV.to_owned());
+    }
+    if Config::get_option("relay-server") != SRV {
+        Config::set_option("relay-server".to_owned(), SRV.to_owned());
+    }
+    if Config::get_option("key") != KEY {
+        Config::set_option("key".to_owned(), KEY.to_owned());
+    }
+}
+
 fn read_custom_client_advanced_settings(
     settings: serde_json::Value,
     map_display_settings: &HashMap<String, &&str>,
