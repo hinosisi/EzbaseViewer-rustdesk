@@ -10,7 +10,7 @@ use serde_json::{json, Map, Value};
 
 #[cfg(not(target_os = "ios"))]
 use hbb_common::whoami;
-#[cfg(not(feature = "ezbaseviewer-host"))]
+#[cfg(not(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer")))]
 use hbb_common::{allow_err, get_version_number};
 use hbb_common::{
     anyhow::{anyhow, Context},
@@ -582,8 +582,8 @@ impl Drop for CheckTestNatType {
 }
 
 pub fn test_nat_type() {
-    #[cfg(feature = "ezbaseviewer-host")]
-    if !ezbaseviewer_host_has_rendezvous_config() {
+    #[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+    if !ezbaseviewer_has_rendezvous_config() {
         log::warn!("Skipping NAT test until an EzbaseViewer rendezvous server is configured");
         return;
     }
@@ -772,8 +772,8 @@ async fn test_rendezvous_server_() {
 }
 
 pub fn test_rendezvous_server() {
-    #[cfg(feature = "ezbaseviewer-host")]
-    if !ezbaseviewer_host_has_rendezvous_config() {
+    #[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+    if !ezbaseviewer_has_rendezvous_config() {
         log::warn!(
             "Skipping rendezvous test until an EzbaseViewer rendezvous server is configured"
         );
@@ -953,10 +953,10 @@ pub fn is_modifier(evt: &KeyEvent) -> bool {
     }
 }
 
-#[cfg(feature = "ezbaseviewer-host")]
+#[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
 pub fn check_software_update() {}
 
-#[cfg(not(feature = "ezbaseviewer-host"))]
+#[cfg(not(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer")))]
 pub fn check_software_update() {
     if is_custom_client() {
         return;
@@ -969,13 +969,13 @@ pub fn check_software_update() {
 
 // No need to check `danger_accept_invalid_cert` for now.
 // Because the url is always `https://api.rustdesk.com/version/latest`.
-#[cfg(feature = "ezbaseviewer-host")]
+#[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
 #[tokio::main(flavor = "current_thread")]
 pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
     Ok(())
 }
 
-#[cfg(not(feature = "ezbaseviewer-host"))]
+#[cfg(not(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer")))]
 #[tokio::main(flavor = "current_thread")]
 pub async fn do_check_software_update() -> hbb_common::ResultType<()> {
     let (request, url) =
@@ -2133,6 +2133,10 @@ pub fn apply_product_profile() {
     {
         *config::APP_NAME.write().unwrap() = "EzbaseViewer Host".to_owned();
     }
+    #[cfg(feature = "ezbaseviewer-viewer")]
+    {
+        *config::APP_NAME.write().unwrap() = "EzbaseViewer Viewer".to_owned();
+    }
 }
 
 #[inline]
@@ -2140,7 +2144,7 @@ pub fn is_incoming_only() -> bool {
     cfg!(feature = "ezbaseviewer-host") || config::is_incoming_only()
 }
 
-#[cfg(feature = "ezbaseviewer-host")]
+#[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
 fn is_allowed_ezbaseviewer_rendezvous_server(server: &str) -> bool {
     let server = server.trim();
     if server.is_empty() {
@@ -2166,8 +2170,8 @@ fn is_allowed_ezbaseviewer_rendezvous_server(server: &str) -> bool {
     host != "rustdesk.com" && !host.ends_with(".rustdesk.com")
 }
 
-pub fn ezbaseviewer_host_has_rendezvous_config() -> bool {
-    #[cfg(feature = "ezbaseviewer-host")]
+pub fn ezbaseviewer_has_rendezvous_config() -> bool {
+    #[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
     {
         let candidates = [
             config::EXE_RENDEZVOUS_SERVER.read().unwrap().clone(),
@@ -2179,7 +2183,7 @@ pub fn ezbaseviewer_host_has_rendezvous_config() -> bool {
             .any(|server| is_allowed_ezbaseviewer_rendezvous_server(server));
     }
 
-    #[cfg(not(feature = "ezbaseviewer-host"))]
+    #[cfg(not(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer")))]
     true
 }
 
@@ -2718,9 +2722,18 @@ mod tests {
         assert_eq!(&*config::APP_NAME.read().unwrap(), "EzbaseViewer Host");
     }
 
-    #[cfg(feature = "ezbaseviewer-host")]
+    #[cfg(feature = "ezbaseviewer-viewer")]
     #[test]
-    fn ezbaseviewer_host_rejects_missing_and_public_rendezvous_servers() {
+    fn ezbaseviewer_viewer_profile_is_branded_and_allows_outgoing_connections() {
+        apply_product_profile();
+
+        assert_eq!(&*config::APP_NAME.read().unwrap(), "EzbaseViewer Viewer");
+        assert!(!cfg!(feature = "ezbaseviewer-host"));
+    }
+
+    #[cfg(any(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+    #[test]
+    fn ezbaseviewer_profiles_reject_missing_and_public_rendezvous_servers() {
         assert!(!is_allowed_ezbaseviewer_rendezvous_server(""));
         assert!(!is_allowed_ezbaseviewer_rendezvous_server(
             "rs-ny.rustdesk.com"

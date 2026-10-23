@@ -116,6 +116,12 @@ def make_parser():
         default=False
     )
     parser.add_argument(
+        '--ezbaseviewer-viewer',
+        action='store_true',
+        help='Build the EzbaseViewer administrator Viewer profile',
+        default=False
+    )
+    parser.add_argument(
         '--hwcodec',
         action='store_true',
         help='Enable feature hwcodec' + (
@@ -280,8 +286,12 @@ def external_resources(flutter, args, res_dir):
 
 def get_features(args):
     features = ['inline'] if not args.flutter else []
+    if args.ezbaseviewer_host and args.ezbaseviewer_viewer:
+        raise ValueError('EzbaseViewer Host and Viewer profiles are mutually exclusive')
     if args.ezbaseviewer_host:
         features.append('ezbaseviewer-host')
+    if args.ezbaseviewer_viewer:
+        features.append('ezbaseviewer-viewer')
     if args.hwcodec:
         features.append('hwcodec')
     if args.vram:

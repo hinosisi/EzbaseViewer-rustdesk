@@ -1,3 +1,6 @@
+#[cfg(all(feature = "ezbaseviewer-host", feature = "ezbaseviewer-viewer"))]
+compile_error!("EzbaseViewer Host and Viewer profiles cannot be enabled together");
+
 mod keyboard;
 /// cbindgen:ignore
 pub mod platform;
