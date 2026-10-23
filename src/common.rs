@@ -2128,14 +2128,18 @@ pub fn load_custom_client() {
     }
 }
 
+// APP_NAME must not contain spaces: the Windows installer interpolates it unquoted
+// into `sc create/start/stop {app_name}`, `reg add HKCR\.{ext}` and the `{ext}://`
+// URL scheme. "EzbaseViewer Host" silently produced an install without a service.
+// (공백 금지 - 서비스가 안 만들어진 채 설치가 '성공'했다. 제품명 표시는 exe 속성에.)
 pub fn apply_product_profile() {
     #[cfg(feature = "ezbaseviewer-host")]
     {
-        *config::APP_NAME.write().unwrap() = "EzbaseViewer Host".to_owned();
+        *config::APP_NAME.write().unwrap() = "EzbaseViewerHost".to_owned();
     }
     #[cfg(feature = "ezbaseviewer-viewer")]
     {
-        *config::APP_NAME.write().unwrap() = "EzbaseViewer Viewer".to_owned();
+        *config::APP_NAME.write().unwrap() = "EzbaseViewer".to_owned();
     }
 }
 
